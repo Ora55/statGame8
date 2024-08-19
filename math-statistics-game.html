@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>משחק סטטיסטיקה</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-image: url('background.png');
+            background-size: cover;
+            margin: 0;
+            padding: 20px;
+        }
+        #game-container {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        input, button {
+            margin: 10px;
+            padding: 5px;
+        }
+        #victory-image {
+            max-width: 200px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>משחק סטטיסטיקה</h1>
+        <div id="start-screen">
+            <input type="text" id="player-name" placeholder="הכנס את שמך">
+            <button onclick="startGame()">התחל משחק</button>
+        </div>
+        <div id="game-screen" style="display: none;">
+            <h2 id="level-title"></h2>
+            <p id="question"></p>
+            <input type="text" id="answer" placeholder="תשובתך">
+            <button onclick="checkAnswer()">בדוק תשובה</button>
+            <p id="feedback"></p>
+        </div>
+        <img id="victory-image" src="victory.png" alt="גביע ניצחון">
+    </div>
+
+    <audio id="background-music" loop>
+        <source src="sound.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const levels = [
+            {
+                title: "שלב 1: חישוב ממוצע",
+                question: "חשב את הממוצע של המספרים הבאים: 5, 8, 12, 15, 20",
+                answer: "12"
+            },
+            {
+                title: "שלב 2: חישוב חציון",
+                question: "מהו החציון של הסדרה: 3, 7, 8, 9, 11, 15?",
+                answer: "8.5"
+            },
+            {
+                title: "שלב 3: קריאת דיאגרמת מקלות",
+                question: "בדיאגרמת מקלות המתארת מכירות פירות, עמודת התפוחים מגיעה לגובה 50. כמה תפוחים נמכרו?",
+                answer: "50"
+            },
+            {
+                title: "שלב 4: קריאת דיאגרמת עוגה",
+                question: "בדיאגרמת עוגה המתארת העדפות צבעים, הצבע כחול תופס 25% מהעוגה. מהו האחוז המתאים לזווית המרכזית?",
+                answer: "90"
+            },
+            {
+                title: "שלב 5: שאלת אתגר",
+                question: "בכיתה של 30 תלמידים, הציון הממוצע במבחן היה 85. אם נוסיף תלמיד עם ציון 95, מה יהיה הממוצע החדש?",
+                answer: "85.32"
+            }
+        ];
+
+        let currentLevel = 0;
+        let playerName = "";
+
+        function startGame() {
+            playerName = document.getElementById("player-name").value;
+            if (playerName.trim() === "") {
+                alert("אנא הכנס את שמך");
+                return;
+            }
+            document.getElementById("start-screen").style.display = "none";
+            document.getElementById("game-screen").style.display = "block";
+            document.getElementById("background-music").play();
+            loadLevel();
+        }
+
+        function loadLevel() {
+            if (currentLevel < levels.length) {
+                const level = levels[currentLevel];
+                document.getElementById("level-title").textContent = level.title;
+                document.getElementById("question").textContent = level.question;
+                document.getElementById("answer").value = "";
+                document.getElementById("feedback").textContent = "";
+            } else {
+                endGame();
+            }
+        }
+
+        function checkAnswer() {
+            const userAnswer = document.getElementById("answer").value.trim();
+            const correctAnswer = levels[currentLevel].answer;
+            
+            if (userAnswer === correctAnswer) {
+                document.getElementById("feedback").textContent = "כל הכבוד! התשובה נכונה.";
+                currentLevel++;
+                setTimeout(() => {
+                    if (currentLevel < levels.length) {
+                        alert(`כל הכבוד ${playerName}! עברת לשלב הבא.`);
+                        loadLevel();
+                    } else {
+                        endGame();
+                    }
+                }, 1000);
+            } else {
+                document.getElementById("feedback").textContent = "טעות. נסה שוב.";
+            }
+        }
+
+        function endGame() {
+            document.getElementById("game-screen").innerHTML = `
+                <h2>כל הכבוד ${playerName}!</h2>
+                <p>סיימת את כל השלבים בהצלחה.</p>
+            `;
+            document.getElementById("victory-image").style.display = "block";
+        }
+    </script>
+</body>
+</html>
